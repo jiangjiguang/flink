@@ -759,10 +759,11 @@ public abstract class ResourceManager<WorkerType extends ResourceIDRetrievable>
 			final JobMasterGateway jobMasterGateway = jobManagerRegistration.getJobManagerGateway();
 			final JobMasterId jobMasterId = jobManagerRegistration.getJobMasterId();
 
-			log.info("Disconnect job manager {}@{} for job {} from the resource manager.",
+			log.error("Disconnect job manager {}@{} for job {} from the resource manager. Because: {}",
 				jobMasterId,
 				jobMasterGateway.getAddress(),
-				jobId);
+				jobId,
+				cause.getMessage());
 
 			jobManagerHeartbeatManager.unmonitorTarget(jobManagerResourceId);
 
@@ -788,7 +789,7 @@ public abstract class ResourceManager<WorkerType extends ResourceIDRetrievable>
 		WorkerRegistration<WorkerType> workerRegistration = taskExecutors.remove(resourceID);
 
 		if (workerRegistration != null) {
-			log.info("Closing TaskExecutor connection {} because: {}", resourceID, cause.getMessage());
+			log.error("Closing TaskExecutor connection {}. Because: {}", resourceID, cause.getMessage());
 
 			// TODO :: suggest failed task executor to stop itself
 			slotManager.unregisterTaskManager(workerRegistration.getInstanceID(), cause);
