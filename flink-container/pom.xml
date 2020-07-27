@@ -72,10 +72,11 @@ under the License.
 			<!-- Assemble a test jar for EntryClassParserTest. More information on this:
 			 http://stackoverflow.com/questions/1401857/using-maven-to-build-separate-jar-files-for-unit-testing-a-custom-class-loader
 			 -->
+			<!--测试编辑
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.4</version><!--$NO-MVN-MAN-VER$-->
-				<executions>
+				<version>2.4</version>
+					<executions>
 					<execution>
 						<id>create-test-dependency</id>
 						<phase>process-test-classes</phase>
@@ -130,6 +131,7 @@ under the License.
 					</execution>
 				</executions>
 			</plugin>
+			-->
 			<!--Remove the external jar test code from the test-classes directory since it mustn't be in the
 			classpath when running the tests to actually test whether the user code class loader
 			is properly used.-->

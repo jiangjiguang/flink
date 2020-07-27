@@ -46,7 +46,9 @@ under the License.
 		<module>flink-s3-fs-hadoop</module>
 		<module>flink-s3-fs-presto</module>
 		<module>flink-swift-fs-hadoop</module>
+		<!--测试编译
 		<module>flink-oss-fs-hadoop</module>
+	    -->
 		<module>flink-azure-fs-hadoop</module>
 	</modules>
 
