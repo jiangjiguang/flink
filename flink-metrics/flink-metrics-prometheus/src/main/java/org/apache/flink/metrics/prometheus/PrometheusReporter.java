@@ -62,6 +62,8 @@ public class PrometheusReporter extends AbstractPrometheusReporter {
 		String portsConfig = config.getString(ARG_PORT, DEFAULT_PORT);
 		Iterator<Integer> ports = NetUtils.getPortRangeFromString(portsConfig);
 
+		log.info("PrometheusReporter open param: ARG_LABEL={}, portsConfig={}", config.getString(ARG_LABEL, ""), portsConfig);
+
 		while (ports.hasNext()) {
 			int port = ports.next();
 			try {
