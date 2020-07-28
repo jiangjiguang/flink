@@ -19,8 +19,11 @@
 package org.apache.flink.runtime.metrics.scope;
 
 import org.apache.flink.metrics.CharacterFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -37,7 +40,7 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
  * exclude it (continuity of the namespace across failure and recovery).
  */
 public abstract class ScopeFormat {
-
+	protected final Logger log = LoggerFactory.getLogger(ScopeFormat.class);
 	private static CharacterFilter defaultFilter = new CharacterFilter() {
 		@Override
 		public String filterCharacters(String input) {
@@ -111,6 +114,8 @@ public abstract class ScopeFormat {
 
 	protected ScopeFormat(String format, ScopeFormat parent, String[] variables) {
 		checkNotNull(format, "format is null");
+
+		log.info("ScopeFormat param: format={}, parent={}, variables={}", format, parent == null ? "null" : parent.toString(), Arrays.toString(variables));
 
 		final String[] rawComponents = format.split("\\" + SCOPE_SEPARATOR);
 
