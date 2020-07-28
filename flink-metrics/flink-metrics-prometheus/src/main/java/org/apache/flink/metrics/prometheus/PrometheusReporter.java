@@ -73,7 +73,7 @@ public class PrometheusReporter extends AbstractPrometheusReporter {
 				log.info("Started PrometheusReporter HTTP server with {port:{}, labels:{}}", port, labels);
 				break;
 			} catch (IOException ioe) { //assume port conflict
-				log.debug("Could not start PrometheusReporter HTTP server on port {}.", port, ioe);
+				log.warn("Could not start PrometheusReporter HTTP server on port {}.", port, ioe);
 			}
 		}
 		if (httpServer == null) {
