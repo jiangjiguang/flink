@@ -83,6 +83,8 @@ public class MetricQueryService extends RpcEndpoint implements MetricQueryServic
 	}
 
 	public void addMetric(String metricName, Metric metric, AbstractMetricGroup group) {
+		log.info("addMetric param: metricName={}, metric={}, group={}",
+			metricName, metric == null ? "null" : metric.toString(), group == null ? "null" : group.toString());
 		runAsync(() -> {
 			QueryScopeInfo info = group.getQueryServiceMetricInfo(FILTER);
 
@@ -114,6 +116,7 @@ public class MetricQueryService extends RpcEndpoint implements MetricQueryServic
 
 	@Override
 	public CompletableFuture<MetricDumpSerialization.MetricSerializationResult> queryMetrics(Time timeout) {
+
 		return callAsync(() -> enforceSizeLimit(serializer.serialize(counters, gauges, histograms, meters)), timeout);
 	}
 

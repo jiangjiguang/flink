@@ -22,10 +22,7 @@ import org.apache.flink.metrics.CharacterFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import static org.apache.flink.util.Preconditions.checkNotNull;
 
@@ -141,6 +138,8 @@ public abstract class ScopeFormat {
 			this.template = rawComponents;
 		}
 
+		log.info("ScopeFormat template: {}", Arrays.toString(template));
+
 		// --- compute the replacement matrix ---
 		// a bit of clumsy Java collections code ;-)
 
@@ -166,6 +165,9 @@ public abstract class ScopeFormat {
 
 		this.templatePos = integerListToArray(templatePos);
 		this.valuePos = integerListToArray(valuePos);
+
+		log.info("ScopeFormat templatePos: {}", templatePos.toString());
+		log.info("ScopeFormat valuePos: {}", templatePos.toString());
 	}
 
 	// ------------------------------------------------------------------------
@@ -181,10 +183,12 @@ public abstract class ScopeFormat {
 	}
 
 	protected final String[] bindVariables(String[] template, String[] values) {
+		log.info("bindVariables param: template={}, values={}", Arrays.toString(template),  Arrays.toString(values));
 		final int len = templatePos.length;
 		for (int i = 0; i < len; i++) {
 			template[templatePos[i]] = values[valuePos[i]];
 		}
+		log.info("bindVariables template: template={}", Arrays.toString(template));
 		return template;
 	}
 
