@@ -120,7 +120,7 @@ public final class ReporterSetup {
 	}
 
 	private static ReporterSetup createReporterSetup(String reporterName, MetricConfig metricConfig, MetricReporter reporter) {
-		LOG.info("Configuring {} with {}.", reporterName, metricConfig);
+		LOG.info("ReporterSetup Configuring {} with {}.", reporterName, metricConfig);
 		reporter.open(metricConfig);
 
 		return new ReporterSetup(reporterName, metricConfig, reporter);
@@ -135,11 +135,16 @@ public final class ReporterSetup {
 		// use a TreeSet to make the reporter order deterministic, which is useful for testing
 		Set<String> namedReporters = new TreeSet<>(String::compareTo);
 		// scan entire configuration for "metric.reporter" keys and parse individual reporter configurations
+
+		LOG.info("fromConfiguration reporterClassPattern={}", reporterClassPattern.pattern());
+
 		for (String key : configuration.keySet()) {
+			LOG.info("fromConfiguration key={}", key);
 			if (key.startsWith(ConfigConstants.METRICS_REPORTER_PREFIX)) {
 				Matcher matcher = reporterClassPattern.matcher(key);
 				if (matcher.matches()) {
 					String reporterName = matcher.group(1);
+					LOG.info("fromConfiguration reporterName={}", reporterName);
 					if (includedReporters.isEmpty() || includedReporters.contains(reporterName)) {
 						if (namedReporters.contains(reporterName)) {
 							LOG.warn("Duplicate class configuration detected for reporter {}.", reporterName);

@@ -57,7 +57,7 @@ public class PrometheusReporter extends AbstractPrometheusReporter {
 	@Override
 	public void open(MetricConfig config) {
 		super.open(config);
-
+		log.info("PrometheusReporter open param: config={}", config == null ? "null" : config.toString());
 		labels = parseLabels(config.getString(ARG_LABEL, ""));
 		String portsConfig = config.getString(ARG_PORT, DEFAULT_PORT);
 		Iterator<Integer> ports = NetUtils.getPortRangeFromString(portsConfig);
