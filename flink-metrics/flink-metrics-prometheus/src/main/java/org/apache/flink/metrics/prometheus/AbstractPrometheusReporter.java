@@ -108,9 +108,17 @@ public abstract class AbstractPrometheusReporter implements MetricReporter {
 			dimensionKeys.add(CHARACTER_FILTER.filterCharacters(key.substring(1, key.length() - 1)));
 			dimensionValues.add(labelValueCharactersFilter.filterCharacters(dimension.getValue()));
 		}
+
+		log.info("notifyOfAddedMetric dimension: dimensionKeys={}, dimensionValues={}", dimensionKeys.toString(), dimensionValues.toString());
+
 		resolveDimensions(dimensionKeys, dimensionValues);
 
+		log.info("notifyOfAddedMetric dimension after resolveDimensions: dimensionKeys={}, dimensionValues={}", dimensionKeys.toString(), dimensionValues.toString());
+
 		final String scopedMetricName = getScopedName(metricName, group);
+
+		log.info("notifyOfAddedMetric scopedMetricName={}", scopedMetricName);
+
 		final String helpString = metricName + " (scope: " + getLogicalScope(group) + ")";
 
 		final Collector collector;
