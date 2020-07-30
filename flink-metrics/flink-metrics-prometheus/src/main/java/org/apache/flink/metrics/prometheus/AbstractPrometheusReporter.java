@@ -98,7 +98,8 @@ public abstract class AbstractPrometheusReporter implements MetricReporter {
 
 	@Override
 	public void notifyOfAddedMetric(final Metric metric, final String metricName, final MetricGroup group) {
-		log.info("metric notifyOfAddedMetric start: metric={}, metricName={}, group={}", metric.toString(), metricName, group.toString());
+		log.info("metric notifyOfAddedMetric start: metric={}, metricName={}, getScopeComponents={}, getAllVariables={}",
+			metric.toString(), metricName, Arrays.toString(group.getScopeComponents()), group.getAllVariables().toString());
 
 		List<String> dimensionKeys = new LinkedList<>();
 		List<String> dimensionValues = new LinkedList<>();

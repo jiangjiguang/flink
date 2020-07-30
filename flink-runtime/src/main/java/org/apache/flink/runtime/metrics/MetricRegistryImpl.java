@@ -330,6 +330,7 @@ public class MetricRegistryImpl implements MetricRegistry {
 
 	@Override
 	public void register(Metric metric, String metricName, AbstractMetricGroup group) {
+		LOG.info("metric register start: metric={}, metricName={}, group={}", metric.toString(), metricName, group.toString());
 		synchronized (lock) {
 			if (isShutdown()) {
 				LOG.warn("Cannot register metric, because the MetricRegistry has already been shut down.");
