@@ -71,6 +71,7 @@ public class JobManagerMetricGroup extends ComponentMetricGroup<JobManagerMetric
 					currentJobGroup = new JobManagerJobMetricGroup(registry, this, jobId, jobName);
 					jobs.put(jobId, currentJobGroup);
 				}
+				LOG.info("addJob result: jobsSize={}, jobs={}", jobs.size(), jobs.toString());
 				return currentJobGroup;
 			} else {
 				return null;
