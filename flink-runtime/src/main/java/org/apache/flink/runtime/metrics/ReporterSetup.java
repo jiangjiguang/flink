@@ -116,6 +116,7 @@ public final class ReporterSetup {
 
 	@VisibleForTesting
 	public static ReporterSetup forReporter(String reporterName, MetricConfig metricConfig, MetricReporter reporter) {
+		LOG.info("forReporter ReporterSetup Configuring {} with {}.", reporterName, metricConfig);
 		return createReporterSetup(reporterName, metricConfig, reporter);
 	}
 
@@ -127,6 +128,8 @@ public final class ReporterSetup {
 	}
 
 	public static List<ReporterSetup> fromConfiguration(final Configuration configuration) {
+		LOG.info("fromConfiguration ReporterSetup configuration {}.", configuration);
+
 		String includedReportersString = configuration.getString(MetricOptions.REPORTERS_LIST, "");
 		Set<String> includedReporters = reporterListPattern.splitAsStream(includedReportersString)
 			.filter(r -> !r.isEmpty()) // splitting an empty string results in an empty string on jdk9+
