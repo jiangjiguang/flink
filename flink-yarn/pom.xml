@@ -165,8 +165,6 @@ under the License.
 	</profiles>
 
 	<build>
-		<finalName>flink-yarn-1.10.1</finalName>
-
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
