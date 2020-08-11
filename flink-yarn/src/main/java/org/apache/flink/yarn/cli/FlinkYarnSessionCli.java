@@ -800,6 +800,7 @@ public class FlinkYarnSessionCli extends AbstractCustomCommandLine {
 		int retCode;
 
 		try {
+			LOG.info("FlinkYarnSessionCli create 1");
 			final FlinkYarnSessionCli cli = new FlinkYarnSessionCli(
 				flinkConfiguration,
 				configurationDirectory,
