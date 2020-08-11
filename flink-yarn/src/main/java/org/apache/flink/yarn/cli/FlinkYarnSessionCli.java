@@ -513,6 +513,7 @@ public class FlinkYarnSessionCli extends AbstractCustomCommandLine {
 	}
 
 	public int run(String[] args) throws CliArgsException, FlinkException {
+		LOG.info("run: args={}", Arrays.toString(args));
 		//
 		//	Command Line Options
 		//
