@@ -159,6 +159,8 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 			YarnClusterInformationRetriever yarnClusterInformationRetriever,
 			boolean sharedYarnClient) {
 
+		LOG.info("YarnClusterDescriptor Configuration={}, YarnConfiguration={}", flinkConfiguration.toString(), yarnConfiguration.toString());
+
 		this.yarnConfiguration = Preconditions.checkNotNull(yarnConfiguration);
 		this.yarnClient = Preconditions.checkNotNull(yarnClient);
 		this.yarnClusterInformationRetriever = Preconditions.checkNotNull(yarnClusterInformationRetriever);
@@ -196,6 +198,7 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 
 		// check whether it's actually a jar file --> when testing we execute this class without a flink-dist jar
 		final String decodedPath = getDecodedJarPath();
+		LOG.info("getLocalFlinkDistPath decodedPath={}", decodedPath);
 		return decodedPath.endsWith(".jar")
 				? Optional.of(new Path(new File(decodedPath).toURI()))
 				: Optional.empty();
