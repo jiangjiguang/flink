@@ -218,6 +218,7 @@ public class CliFrontend {
 			final ProgramOptions programOptions,
 			final List<URL> jobJars) throws FlinkException {
 
+		LOG.info("getEffectiveConfiguration start");
 		final CustomCommandLine customCommandLine = getActiveCustomCommandLine(checkNotNull(commandLine));
 		final ExecutionConfigAccessor executionParameters = ExecutionConfigAccessor.fromProgramOptions(
 				checkNotNull(programOptions),
@@ -828,6 +829,7 @@ public class CliFrontend {
 	 * @throws FlinkException if something goes wrong
 	 */
 	private <ClusterID> void runClusterAction(CustomCommandLine activeCommandLine, CommandLine commandLine, ClusterAction<ClusterID> clusterAction) throws FlinkException {
+		LOG.info("runClusterAction start");
 		final Configuration executorConfig = activeCommandLine.applyCommandLineOptionsToConfiguration(commandLine);
 		final ClusterClientFactory<ClusterID> clusterClientFactory = clusterClientServiceLoader.getClusterClientFactory(executorConfig);
 
