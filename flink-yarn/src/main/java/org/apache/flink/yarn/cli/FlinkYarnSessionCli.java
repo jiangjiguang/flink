@@ -159,6 +159,7 @@ public class FlinkYarnSessionCli extends AbstractCustomCommandLine {
 			String shortPrefix,
 			String longPrefix) throws FlinkException {
 		this(configuration, new DefaultClusterClientServiceLoader(), configurationDirectory, shortPrefix, longPrefix, true);
+		LOG.info("FlinkYarnSessionCli 1");
 	}
 
 	public FlinkYarnSessionCli(
@@ -168,6 +169,7 @@ public class FlinkYarnSessionCli extends AbstractCustomCommandLine {
 			String longPrefix,
 			boolean acceptInteractiveInput) throws FlinkException {
 		this(configuration, new DefaultClusterClientServiceLoader(), configurationDirectory, shortPrefix, longPrefix, acceptInteractiveInput);
+		LOG.info("FlinkYarnSessionCli 2");
 	}
 
 	public FlinkYarnSessionCli(
@@ -182,6 +184,8 @@ public class FlinkYarnSessionCli extends AbstractCustomCommandLine {
 		this.configurationDirectory = checkNotNull(configurationDirectory);
 		this.acceptInteractiveInput = acceptInteractiveInput;
 
+		LOG.info("FlinkYarnSessionCli configuration={}, ClusterClientServiceLoader={}, configurationDirectory={}, shortPrefix={}, longPrefix{}, acceptInteractiveInput={}",
+			configuration.toString(), clusterClientServiceLoader.toString(), configurationDirectory, shortPrefix, longPrefix, acceptInteractiveInput);
 		// Create the command line options
 
 		query = new Option(shortPrefix + "q", longPrefix + "query", false, "Display available YARN resources (memory, cores)");
@@ -221,6 +225,24 @@ public class FlinkYarnSessionCli extends AbstractCustomCommandLine {
 		allOptions.addOption(zookeeperNamespace);
 		allOptions.addOption(nodeLabel);
 		allOptions.addOption(help);
+
+		LOG.info("addOption flinkJar={}", flinkJar);
+		LOG.info("addOption jmMemory={}", jmMemory);
+		LOG.info("addOption tmMemory={}", tmMemory);
+		LOG.info("addOption queue={}", queue);
+		LOG.info("addOption query={}", query);
+		LOG.info("addOption shipPath={}", shipPath);
+		LOG.info("addOption slots={}", slots);
+		LOG.info("addOption dynamicproperties={}", dynamicproperties);
+		LOG.info("addOption DETACHED_OPTION={}", DETACHED_OPTION);
+		LOG.info("addOption YARN_DETACHED_OPTION={}", YARN_DETACHED_OPTION);
+		LOG.info("addOption name={}", name);
+		LOG.info("addOption applicationId={}", applicationId);
+		LOG.info("addOption applicationType={}", applicationType);
+		LOG.info("addOption zookeeperNamespace={}", zookeeperNamespace);
+		LOG.info("addOption nodeLabel={}", nodeLabel);
+		LOG.info("addOption help={}", help);
+
 
 		// try loading a potential yarn properties file
 		this.yarnPropertiesFileLocation = configuration.getString(YarnConfigOptions.PROPERTIES_FILE_LOCATION);
@@ -326,6 +348,7 @@ public class FlinkYarnSessionCli extends AbstractCustomCommandLine {
 
 	@Override
 	public Configuration applyCommandLineOptionsToConfiguration(CommandLine commandLine) throws FlinkException {
+		LOG.info("applyCommandLineOptionsToConfiguration commandLine={}", commandLine.toString());
 		// we ignore the addressOption because it can only contain "yarn-cluster"
 		final Configuration effectiveConfiguration = new Configuration(configuration);
 
