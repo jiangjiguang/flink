@@ -22,6 +22,8 @@ import org.apache.flink.configuration.Configuration;
 
 import org.apache.hadoop.yarn.client.api.YarnClient;
 import org.apache.hadoop.yarn.conf.YarnConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 
@@ -29,6 +31,7 @@ import javax.annotation.Nullable;
  * Builder for the {@link YarnClusterDescriptor}.
  */
 public final class YarnClusterDescriptorBuilder {
+	private static final Logger LOG = LoggerFactory.getLogger(YarnClusterDescriptorBuilder.class);
 
 	private final YarnClient yarnClient;
 	private final boolean sharedYarnClient;
@@ -67,7 +70,7 @@ public final class YarnClusterDescriptorBuilder {
 		} else {
 			clusterInformationRetriever = yarnClusterInformationRetriever;
 		}
-
+		LOG.info("build start");
 		return new YarnClusterDescriptor(
 			flinkConfiguration,
 			yarnConfiguration,

@@ -193,8 +193,7 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 		if (localJarPath != null) {
 			return Optional.of(new Path(localJarPath));
 		}
-		LOG.info("12345678");
-		LOG.info("2No path for the flink jar passed. Using the location of " + getClass() + " to locate the jar");
+		LOG.info("No path for the flink jar passed. Using the location of " + getClass() + " to locate the jar");
 
 		// check whether it's actually a jar file --> when testing we execute this class without a flink-dist jar
 		final String decodedPath = getDecodedJarPath();

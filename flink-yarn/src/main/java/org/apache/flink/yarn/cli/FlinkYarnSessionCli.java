@@ -74,11 +74,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -273,6 +269,7 @@ public class FlinkYarnSessionCli extends AbstractCustomCommandLine {
 		if (!userPath.startsWith("file://")) {
 			userPath = "file://" + userPath;
 		}
+		LOG.info("getLocalFlinkDistPathFromCmd userPath={}", userPath);
 		return new Path(userPath);
 	}
 
@@ -397,6 +394,8 @@ public class FlinkYarnSessionCli extends AbstractCustomCommandLine {
 	}
 
 	private void applyDescriptorOptionToConfig(final CommandLine commandLine, final Configuration configuration) {
+		LOG.info("applyDescriptorOptionToConfig commandLine={}, getOptions={}, configuration={}",
+			commandLine.getArgList(), Arrays.toString(commandLine.getOptions()), configuration.toString());
 		checkNotNull(commandLine);
 		checkNotNull(configuration);
 
@@ -453,6 +452,7 @@ public class FlinkYarnSessionCli extends AbstractCustomCommandLine {
 	}
 
 	private static Optional<File> discoverLogConfigFile(final String configurationDirectory) {
+		LOG.info("discoverLogConfigFile configurationDirectory={}", configurationDirectory);
 		Optional<File> logConfigFile = Optional.empty();
 
 		final File log4jFile = new File(configurationDirectory + File.separator + CONFIG_FILE_LOG4J_NAME);
@@ -767,6 +767,8 @@ public class FlinkYarnSessionCli extends AbstractCustomCommandLine {
 	}
 
 	public static void main(final String[] args) {
+		LOG.info("FlinkYarnSessionCli main start: args={}", Arrays.toString(args));
+
 		final String configurationDirectory = CliFrontend.getConfigurationDirectoryFromEnv();
 
 		final Configuration flinkConfiguration = GlobalConfiguration.loadConfiguration();

@@ -31,6 +31,8 @@ import org.apache.hadoop.yarn.api.records.ApplicationId;
 import org.apache.hadoop.yarn.client.api.YarnClient;
 import org.apache.hadoop.yarn.conf.YarnConfiguration;
 import org.apache.hadoop.yarn.util.ConverterUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 
@@ -41,6 +43,7 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
  */
 @Internal
 public class YarnClusterClientFactory extends AbstractContainerizedClusterClientFactory<ApplicationId> {
+	private static final Logger LOG = LoggerFactory.getLogger(YarnClusterClientFactory.class);
 
 	@Override
 	public boolean isCompatibleWith(Configuration configuration) {
@@ -65,6 +68,7 @@ public class YarnClusterClientFactory extends AbstractContainerizedClusterClient
 	}
 
 	private YarnClusterDescriptor getClusterDescriptor(Configuration configuration) {
+		LOG.info("getClusterDescriptor start");
 		final YarnClient yarnClient = YarnClient.createYarnClient();
 		final YarnConfiguration yarnConfiguration = new YarnConfiguration();
 
