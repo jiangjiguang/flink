@@ -105,6 +105,7 @@ under the License.
 	</dependencies>
 
 	<build>
+		<finalName>flink-metrics-prometheus_2.11-1.10.1</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
