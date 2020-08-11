@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -267,6 +268,7 @@ public class EnvironmentInformation {
 	 * @param commandLineArgs The arguments accompanying the starting the component.
 	 */
 	public static void logEnvironmentInfo(Logger log, String componentName, String[] commandLineArgs) {
+		log.info("logEnvironmentInfo componentName={}, commandLineArgs={}", componentName, Arrays.toString(commandLineArgs));
 		if (log.isInfoEnabled()) {
 			RevisionInformation rev = getRevisionInformation();
 			String version = getVersion();
