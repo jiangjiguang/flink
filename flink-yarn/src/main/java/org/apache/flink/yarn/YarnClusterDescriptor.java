@@ -98,16 +98,7 @@ import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.apache.flink.configuration.ConfigConstants.DEFAULT_FLINK_USR_LIB_DIR;
@@ -372,6 +363,7 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 
 	@Override
 	public ClusterClientProvider<ApplicationId> deploySessionCluster(ClusterSpecification clusterSpecification) throws ClusterDeploymentException {
+		LOG.info("deploySessionCluster");
 		try {
 			return deployInternal(
 					clusterSpecification,
@@ -389,6 +381,7 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 		ClusterSpecification clusterSpecification,
 		JobGraph jobGraph,
 		boolean detached) throws ClusterDeploymentException {
+		LOG.info("deployJobCluster");
 		try {
 			return deployInternal(
 				clusterSpecification,
@@ -429,6 +422,18 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 			@Nullable JobGraph jobGraph,
 			boolean detached) throws Exception {
 
+		/*
+		List<JobVertex> jobVertexList = jobGraph.getVerticesSortedTopologicallyFromSources();
+		for (JobVertex jobVertex : jobVertexList) {
+			List<JobEdge> jobEdges = jobVertex.getInputs();
+			for(JobEdge jobEdge : jobEdges){
+				jobEdge.get
+			}
+			System.out.println(jobVertex.getO());
+			jobVertex.
+		}
+		 */
+
 		if (UserGroupInformation.isSecurityEnabled()) {
 			// note: UGI::hasKerberosCredentials inaccurately reports false
 			// for logins based on a keytab (fixed in Hadoop 2.6.1, see HADOOP-10786),
@@ -457,6 +462,8 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 
 		Resource maxRes = appResponse.getMaximumResourceCapability();
 
+		LOG.info("maxRes: {}", maxRes.toString());
+
 		final ClusterResourceDescription freeClusterMem;
 		try {
 			freeClusterMem = getCurrentFreeClusterResources(yarnClient);
@@ -465,7 +472,12 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 			throw new YarnDeploymentException("Could not retrieve information about free cluster resources.", e);
 		}
 
+		LOG.info("freeClusterMem: totalFreeMemory={}, containerLimit={}, nodeManagersFree={}",
+			freeClusterMem.totalFreeMemory, freeClusterMem.containerLimit, Arrays.toString(freeClusterMem.nodeManagersFree));
+
 		final int yarnMinAllocationMB = yarnConfiguration.getInt(YarnConfiguration.RM_SCHEDULER_MINIMUM_ALLOCATION_MB, 0);
+
+		LOG.info("yarnMinAllocationMB: {}", yarnMinAllocationMB);
 
 		final ClusterSpecification validClusterSpecification;
 		try {
@@ -570,6 +582,7 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 	private void checkYarnQueues(YarnClient yarnClient) {
 		try {
 			List<QueueInfo> queues = yarnClient.getAllQueues();
+			LOG.info("checkYarnQueues queues={}", queues.toString());
 			if (queues.size() > 0 && this.yarnQueue != null) { // check only if there are queues configured in yarn and for this session.
 				boolean queueFound = false;
 				for (QueueInfo queue : queues) {
@@ -617,6 +630,9 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 		// Create a local resource to point to the destination jar path
 		final FileSystem fs = FileSystem.get(yarnConfiguration);
 		final Path homeDir = fs.getHomeDirectory();
+
+		LOG.info("startAppMaster fs={}", fs.getClass().getSimpleName());
+		LOG.info("startAppMaster homeDir={}", homeDir.getName());
 
 		// hard coded check for the GoogleHDFS client because its not overriding the getScheme() method.
 		if (!fs.getClass().getSimpleName().equals("GoogleHadoopFileSystem") &&

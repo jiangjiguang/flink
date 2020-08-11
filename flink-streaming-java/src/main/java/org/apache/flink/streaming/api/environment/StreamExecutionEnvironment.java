@@ -93,6 +93,8 @@ import org.apache.flink.util.StringUtils;
 import org.apache.flink.util.WrappingRuntimeException;
 
 import com.esotericsoftware.kryo.Serializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -119,6 +121,7 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
  */
 @Public
 public class StreamExecutionEnvironment {
+	private static final Logger LOG = LoggerFactory.getLogger(StreamExecutionEnvironment.class);
 
 	/** The default name to use for a streaming job if no other name has been specified. */
 	public static final String DEFAULT_JOB_NAME = "Flink Streaming Job";
@@ -1717,6 +1720,7 @@ public class StreamExecutionEnvironment {
 	 */
 	@Internal
 	public JobClient executeAsync(StreamGraph streamGraph) throws Exception {
+		LOG.info("executeAsync ", streamGraph.getIterationSourceSinkPairs().toString());
 		checkNotNull(streamGraph, "StreamGraph cannot be null.");
 		checkNotNull(configuration.get(DeploymentOptions.TARGET), "No execution.target specified in your configuration file.");
 

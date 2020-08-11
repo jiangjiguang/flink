@@ -60,7 +60,7 @@ public class AbstractJobClusterExecutor<ClusterID, ClientFactory extends Cluster
 	@Override
 	public CompletableFuture<JobClient> execute(@Nonnull final Pipeline pipeline, @Nonnull final Configuration configuration) throws Exception {
 		final JobGraph jobGraph = ExecutorUtils.getJobGraph(pipeline, configuration);
-
+		LOG.info("execute pipeline={}, configuration={}", pipeline.toString(), configuration.toString());
 		try (final ClusterDescriptor<ClusterID> clusterDescriptor = clusterClientFactory.createClusterDescriptor(configuration)) {
 			final ExecutionConfigAccessor configAccessor = ExecutionConfigAccessor.fromConfiguration(configuration);
 
