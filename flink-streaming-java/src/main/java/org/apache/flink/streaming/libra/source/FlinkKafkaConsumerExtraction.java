@@ -1,6 +1,5 @@
 package org.apache.flink.streaming.libra.source;
 
-import com.google.common.collect.Maps;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.flink.api.common.functions.Function;
 import org.apache.flink.streaming.libra.AbstractExtraction;
@@ -8,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.Map;
 
 public class FlinkKafkaConsumerExtraction extends AbstractExtraction {
@@ -15,7 +15,7 @@ public class FlinkKafkaConsumerExtraction extends AbstractExtraction {
 
 	@Override
 	public Map<String, Object> source(String jobName, Function function) {
-		Map<String, Object> resultMap = Maps.newHashMap();
+		Map<String, Object> resultMap = new HashMap<>();
 		try {
 			Class klass = function.getClass();
 			Field[] fields = klass.getDeclaredFields();
