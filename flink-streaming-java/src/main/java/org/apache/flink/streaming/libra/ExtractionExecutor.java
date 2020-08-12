@@ -35,7 +35,8 @@ public class ExtractionExecutor {
 			if (CollectionUtils.isEmpty(sourceIds)) {
 				logger.warn("extraction warn, sinkIds is empty, jobName={}", streamGraph.getJobName());
 			}
-
+			logger.info("extraction sourceIds: sourceIds={}", myJSONMapper.toJSONString(sourceIds));
+			logger.info("extraction sinkIds: sinkIds={}", myJSONMapper.toJSONString(sinkIds));
 			if (CollectionUtils.isNotEmpty(sourceIds)) {
 				for (Integer sourceId : sourceIds) {
 					StreamNode streamNode = streamGraph.getStreamNode(sourceId);
@@ -46,7 +47,8 @@ public class ExtractionExecutor {
 					}
 					IExtraction extraction = getIExtraction(simpleUdfStreamOperatorFactory.getUserFunctionClassName(), streamGraph.getJobName());
 					if (extraction == null) {
-						logger.warn("extraction warn extraction is null: jobName={}, className={}", streamGraph.getJobName(), simpleUdfStreamOperatorFactory.getUserFunctionClassName());
+						logger.warn("extraction source warn extraction is null: jobName={}, className={}", streamGraph.getJobName(), simpleUdfStreamOperatorFactory.getUserFunctionClassName());
+						continue;
 					}
 					Map<String, Object> sourceResultMap = extraction.source(jobName, simpleUdfStreamOperatorFactory.getUserFunction());
 					logger.info("taskSources result: jobName={}, data={}", myJSONMapper.toJSONString(sourceResultMap));
@@ -64,7 +66,8 @@ public class ExtractionExecutor {
 					logger.info("function className: jobName={}, className={}", streamGraph.getJobName(), simpleUdfStreamOperatorFactory.getUserFunctionClassName());
 					IExtraction extraction = getIExtraction(simpleUdfStreamOperatorFactory.getUserFunctionClassName(), streamGraph.getJobName());
 					if (extraction == null) {
-						logger.warn("extraction is null: jobName={}, className={}", streamGraph.getJobName(), simpleUdfStreamOperatorFactory.getUserFunctionClassName());
+						logger.warn("extraction sink warn extraction is null: jobName={}, className={}", streamGraph.getJobName(), simpleUdfStreamOperatorFactory.getUserFunctionClassName());
+						continue;
 					}
 
 					Map<String, Object> sinkResultMap = extraction.source(jobName, simpleUdfStreamOperatorFactory.getUserFunction());
