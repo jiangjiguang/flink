@@ -16,6 +16,7 @@ public class FlinkKafkaProducerExtraction extends AbstractExtraction {
 
 	@Override
 	public Map<String, Object> sink(String jobName, Function function) {
+		logger.info("sink param: jobName={}, function={}", jobName, function.getClass().getName());
 		Map<String, Object> resultMap = new HashMap<>();
 		try {
 			Class klass = function.getClass();

@@ -13,11 +13,13 @@ public abstract class AbstractExtraction implements IExtraction {
 
 	@Override
 	public Map<String, Object> source(String jobName, Function function) {
+		logger.info("source null: jobName={}, function={}", jobName, function.getClass().getName());
 		return null;
 	}
 
 	@Override
 	public Map<String, Object> sink(String jobName, Function function) {
+		logger.info("sink null: jobName={}, function={}", jobName, function.getClass().getName());
 		return null;
 	}
 }

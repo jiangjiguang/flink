@@ -15,6 +15,8 @@ public class FlinkKafkaConsumerExtraction extends AbstractExtraction {
 
 	@Override
 	public Map<String, Object> source(String jobName, Function function) {
+		logger.info("source param: jobName={}, function={}", jobName, function.getClass().getName());
+
 		Map<String, Object> resultMap = new HashMap<>();
 		try {
 			Class klass = function.getClass();
