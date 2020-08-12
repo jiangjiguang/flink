@@ -45,13 +45,14 @@ public class ExtractionExecutor {
 						logger.warn("extraction warn simpleUdfStreamOperatorFactory is null, jobName={}", streamGraph.getJobName());
 						continue;
 					}
+					logger.info("source function className: jobName={}, className={}", streamGraph.getJobName(), simpleUdfStreamOperatorFactory.getUserFunctionClassName());
 					IExtraction extraction = getIExtraction(simpleUdfStreamOperatorFactory.getUserFunctionClassName(), streamGraph.getJobName());
 					if (extraction == null) {
 						logger.warn("extraction source warn extraction is null: jobName={}, className={}", streamGraph.getJobName(), simpleUdfStreamOperatorFactory.getUserFunctionClassName());
 						continue;
 					}
 					Map<String, Object> sourceResultMap = extraction.source(jobName, simpleUdfStreamOperatorFactory.getUserFunction());
-					logger.info("taskSources result: jobName={}, data={}", myJSONMapper.toJSONString(sourceResultMap));
+					logger.info("taskSources result: jobName={}, data={}", jobName, myJSONMapper.toJSONString(sourceResultMap));
 				}
 			}
 
@@ -63,15 +64,15 @@ public class ExtractionExecutor {
 						logger.warn("simpleUdfStreamOperatorFactory is null, jobName={}", streamGraph.getJobName());
 						continue;
 					}
-					logger.info("function className: jobName={}, className={}", streamGraph.getJobName(), simpleUdfStreamOperatorFactory.getUserFunctionClassName());
+					logger.info("sink function className: jobName={}, className={}", streamGraph.getJobName(), simpleUdfStreamOperatorFactory.getUserFunctionClassName());
 					IExtraction extraction = getIExtraction(simpleUdfStreamOperatorFactory.getUserFunctionClassName(), streamGraph.getJobName());
 					if (extraction == null) {
 						logger.warn("extraction sink warn extraction is null: jobName={}, className={}", streamGraph.getJobName(), simpleUdfStreamOperatorFactory.getUserFunctionClassName());
 						continue;
 					}
 
-					Map<String, Object> sinkResultMap = extraction.source(jobName, simpleUdfStreamOperatorFactory.getUserFunction());
-					logger.info("taskSinks result: jobName={}, data={}", myJSONMapper.toJSONString(sinkResultMap));
+					Map<String, Object> sinkResultMap = extraction.sink(jobName, simpleUdfStreamOperatorFactory.getUserFunction());
+					logger.info("taskSinks result: jobName={}, data={}", jobName, myJSONMapper.toJSONString(sinkResultMap));
 				}
 			}
 		} catch (Exception ex) {
