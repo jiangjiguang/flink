@@ -20,10 +20,13 @@ public class FlinkKafkaProducerExtraction extends AbstractExtraction {
 		Map<String, Object> resultMap = new HashMap<>();
 		try {
 			Class klass = function.getClass();
+			logger.info("sink param: klass={}", klass.getName());
 			Field[] fields = klass.getDeclaredFields();
 			for (Field field : fields) {
 				field.setAccessible(true);
 				Object value = field.get(function);
+				logger.info("sink param: name={}, value={}", field.getName(), value);
+
 				if (value == null) {
 					continue;
 				}
