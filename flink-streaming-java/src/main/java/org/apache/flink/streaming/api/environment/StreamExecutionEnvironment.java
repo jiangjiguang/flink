@@ -85,6 +85,7 @@ import org.apache.flink.streaming.api.functions.source.StatefulSequenceSource;
 import org.apache.flink.streaming.api.graph.StreamGraph;
 import org.apache.flink.streaming.api.graph.StreamGraphGenerator;
 import org.apache.flink.streaming.api.operators.StreamSource;
+import org.apache.flink.streaming.libra.ExtractionExecutor;
 import org.apache.flink.util.DynamicCodeLoadingException;
 import org.apache.flink.util.ExceptionUtils;
 import org.apache.flink.util.Preconditions;
@@ -1788,6 +1789,10 @@ public class StreamExecutionEnvironment {
 		if (clearTransformations) {
 			this.transformations.clear();
 		}
+
+		ExtractionExecutor extractionExecutor = new ExtractionExecutor();
+		extractionExecutor.getSourceOrSink(streamGraph);
+
 		return streamGraph;
 	}
 
