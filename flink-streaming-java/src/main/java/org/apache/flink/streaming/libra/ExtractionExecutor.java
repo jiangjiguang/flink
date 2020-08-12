@@ -5,7 +5,9 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.flink.streaming.api.graph.StreamGraph;
 import org.apache.flink.streaming.api.graph.StreamNode;
 import org.apache.flink.streaming.api.operators.SimpleUdfStreamOperatorFactory;
+import org.apache.flink.streaming.libra.sink.DefaultSinkExtraction;
 import org.apache.flink.streaming.libra.sink.FlinkKafkaProducerExtraction;
+import org.apache.flink.streaming.libra.source.DefaultSourceExtraction;
 import org.apache.flink.streaming.libra.source.FlinkKafkaConsumerExtraction;
 import org.apache.flink.streaming.util.MyJSONMapper;
 import org.slf4j.Logger;
@@ -17,42 +19,38 @@ import java.util.Map;
 public class ExtractionExecutor {
 	private static final Logger logger = LoggerFactory.getLogger(ExtractionExecutor.class);
 
-	public void getSourceOrSink(StreamGraph streamGraph) {
-		MyJSONMapper myJSONMapper = new MyJSONMapper();
+	public void extractSourceOrSink(StreamGraph streamGraph) {
 		String jobName = "";
 		try {
+			MyJSONMapper myJSONMapper = new MyJSONMapper();
 			if (streamGraph == null) {
-				logger.warn("extraction warn, streamGraph is null, jobName={}", streamGraph.getJobName());
+				logger.warn("extractSourceOrSink warn: streamGraph is null, jobName={}", jobName);
 				return;
 			}
 			jobName = streamGraph.getJobName();
 			Collection<Integer> sourceIds = streamGraph.getSourceIDs();
 			if (CollectionUtils.isEmpty(sourceIds)) {
-				logger.warn("extraction warn, sourceIds is empty, jobName={}", streamGraph.getJobName());
+				logger.warn("extractSourceOrSink warn: sourceIds is empty, jobName={}", jobName);
 			}
-
 			Collection<Integer> sinkIds = streamGraph.getSinkIDs();
-			if (CollectionUtils.isEmpty(sourceIds)) {
-				logger.warn("extraction warn, sinkIds is empty, jobName={}", streamGraph.getJobName());
-			}
-			logger.info("extraction sourceIds: sourceIds={}", myJSONMapper.toJSONString(sourceIds));
-			logger.info("extraction sinkIds: sinkIds={}", myJSONMapper.toJSONString(sinkIds));
+			logger.info("extractSourceOrSink sourceIds:  jobName={}, sourceIds={}", jobName, myJSONMapper.toJSONString(sourceIds));
+			logger.info("extractSourceOrSink sinkIds:  jobName={}, sinkIds={}", jobName, myJSONMapper.toJSONString(sinkIds));
 			if (CollectionUtils.isNotEmpty(sourceIds)) {
 				for (Integer sourceId : sourceIds) {
 					StreamNode streamNode = streamGraph.getStreamNode(sourceId);
 					SimpleUdfStreamOperatorFactory simpleUdfStreamOperatorFactory = (SimpleUdfStreamOperatorFactory) streamNode.getOperatorFactory();
 					if (simpleUdfStreamOperatorFactory == null) {
-						logger.warn("extraction warn simpleUdfStreamOperatorFactory is null, jobName={}", streamGraph.getJobName());
+						logger.warn("extraction source warn simpleUdfStreamOperatorFactory is null: jobName={}", jobName);
 						continue;
 					}
-					logger.info("source function className: jobName={}, className={}", streamGraph.getJobName(), simpleUdfStreamOperatorFactory.getUserFunctionClassName());
-					IExtraction extraction = getIExtraction(simpleUdfStreamOperatorFactory.getUserFunctionClassName(), streamGraph.getJobName());
+					String functionClassName = simpleUdfStreamOperatorFactory.getUserFunctionClassName();
+					IExtraction extraction = getIExtraction(true, functionClassName, jobName);
 					if (extraction == null) {
-						logger.warn("extraction source warn extraction is null: jobName={}, className={}", streamGraph.getJobName(), simpleUdfStreamOperatorFactory.getUserFunctionClassName());
+						logger.warn("extraction source warn extraction is null: jobName={}, className={}", jobName, functionClassName);
 						continue;
 					}
 					Map<String, Object> sourceResultMap = extraction.source(jobName, simpleUdfStreamOperatorFactory.getUserFunction());
-					logger.info("taskSources result: jobName={}, data={}", jobName, myJSONMapper.toJSONString(sourceResultMap));
+					logger.info("extraction source result: jobName={}, functionClassName={}, data={}", jobName, functionClassName, myJSONMapper.toJSONString(sourceResultMap));
 				}
 			}
 
@@ -61,39 +59,39 @@ public class ExtractionExecutor {
 					StreamNode streamNode = streamGraph.getStreamNode(sinkId);
 					SimpleUdfStreamOperatorFactory simpleUdfStreamOperatorFactory = (SimpleUdfStreamOperatorFactory) streamNode.getOperatorFactory();
 					if (simpleUdfStreamOperatorFactory == null) {
-						logger.warn("simpleUdfStreamOperatorFactory is null, jobName={}", streamGraph.getJobName());
+						logger.warn("extraction sink warn simpleUdfStreamOperatorFactory is null: jobName={}", jobName);
 						continue;
 					}
-					logger.info("sink function className: jobName={}, className={}", streamGraph.getJobName(), simpleUdfStreamOperatorFactory.getUserFunctionClassName());
-					IExtraction extraction = getIExtraction(simpleUdfStreamOperatorFactory.getUserFunctionClassName(), streamGraph.getJobName());
+					String functionClassName = simpleUdfStreamOperatorFactory.getUserFunctionClassName();
+					IExtraction extraction = getIExtraction(true, functionClassName, jobName);
 					if (extraction == null) {
-						logger.warn("extraction sink warn extraction is null: jobName={}, className={}", streamGraph.getJobName(), simpleUdfStreamOperatorFactory.getUserFunctionClassName());
+						logger.warn("extraction sink warn extraction is null: jobName={}, className={}", jobName, functionClassName);
 						continue;
 					}
-
-					Map<String, Object> sinkResultMap = extraction.sink(jobName, simpleUdfStreamOperatorFactory.getUserFunction());
-					logger.info("taskSinks result: jobName={}, data={}", jobName, myJSONMapper.toJSONString(sinkResultMap));
+					Map<String, Object> sourceResultMap = extraction.sink(jobName, simpleUdfStreamOperatorFactory.getUserFunction());
+					logger.info("extraction sink result: jobName={}, functionClassName={}, data={}", jobName, functionClassName, myJSONMapper.toJSONString(sourceResultMap));
 				}
 			}
 		} catch (Exception ex) {
-			logger.error("getSourceOrSink error: jobName={}, exception={}", jobName, ExceptionUtils.getStackTrace(ex));
+			logger.error("extractSourceOrSink error: jobName={}, exception={}", jobName, ExceptionUtils.getStackTrace(ex));
 		}
 	}
 
-	private IExtraction getIExtraction(String functionClassName, String jobName) {
+	private IExtraction getIExtraction(boolean source, String functionClassName, String jobName) {
 		if (functionClassName == null) {
 			logger.warn("functionClassName is null, jobName={}", jobName);
 			return null;
 		}
-
 		switch (functionClassName) {
 			case "org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer":
 				return new FlinkKafkaConsumerExtraction();
 			case "org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer":
 				return new FlinkKafkaProducerExtraction();
 			default:
-				logger.warn("getIExtraction warn not: functionClassName={}, jobName={}", functionClassName, jobName);
-				return null;
+				if (source) {
+					return new DefaultSourceExtraction();
+				}
+				return new DefaultSinkExtraction();
 		}
 	}
 }
