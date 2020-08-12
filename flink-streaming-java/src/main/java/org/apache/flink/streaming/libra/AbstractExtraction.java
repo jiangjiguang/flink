@@ -34,13 +34,9 @@ public abstract class AbstractExtraction implements IExtraction {
 			for (Field field : fields) {
 				field.setAccessible(true);
 				Object value = field.get(function);
-				if (value == null) {
-					continue;
-				}
-				if (allFlag || fieldSet.contains(field.getName())) {
+				if (value != null && (allFlag || fieldSet.contains(field.getName()))) {
 					resultMap.put(field.getName(), value);
 				}
-				resultMap.put(field.getName(), value);
 			}
 			if (parent) {
 				Class parentClass = function.getClass().getSuperclass();
@@ -48,15 +44,11 @@ public abstract class AbstractExtraction implements IExtraction {
 				for (Field field : parentFields) {
 					field.setAccessible(true);
 					Object value = field.get(function);
-					if (value == null) {
-						continue;
-					}
-					if (allFlag || fieldSet.contains(field.getName())) {
+					if (value != null && (allFlag || fieldSet.contains(field.getName()))) {
 						resultMap.put(field.getName(), value);
 					}
 				}
 			}
-
 		} catch (Exception ex) {
 			logger.error("extractSourceOrSink error: jobName={}, exception={}", jobName, ExceptionUtils.getStackTrace(ex));
 		}

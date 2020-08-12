@@ -9,7 +9,6 @@ import org.apache.flink.streaming.libra.sink.DefaultSinkExtraction;
 import org.apache.flink.streaming.libra.sink.FlinkKafkaProducerExtraction;
 import org.apache.flink.streaming.libra.source.DefaultSourceExtraction;
 import org.apache.flink.streaming.libra.source.FlinkKafkaConsumerExtraction;
-import org.apache.flink.streaming.util.MyJSONMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +21,6 @@ public class ExtractionExecutor {
 	public void extractSourceOrSink(StreamGraph streamGraph) {
 		String jobName = "";
 		try {
-			MyJSONMapper myJSONMapper = new MyJSONMapper();
 			if (streamGraph == null) {
 				logger.warn("extractSourceOrSink warn: streamGraph is null, jobName={}", jobName);
 				return;
@@ -33,8 +31,6 @@ public class ExtractionExecutor {
 				logger.warn("extractSourceOrSink warn: sourceIds is empty, jobName={}", jobName);
 			}
 			Collection<Integer> sinkIds = streamGraph.getSinkIDs();
-			logger.info("extractSourceOrSink sourceIds:  jobName={}, sourceIds={}", jobName, myJSONMapper.toJSONString(sourceIds));
-			logger.info("extractSourceOrSink sinkIds:  jobName={}, sinkIds={}", jobName, myJSONMapper.toJSONString(sinkIds));
 			if (CollectionUtils.isNotEmpty(sourceIds)) {
 				for (Integer sourceId : sourceIds) {
 					StreamNode streamNode = streamGraph.getStreamNode(sourceId);
@@ -50,7 +46,7 @@ public class ExtractionExecutor {
 						continue;
 					}
 					Map<String, Object> sourceResultMap = extraction.source(jobName, simpleUdfStreamOperatorFactory.getUserFunction());
-					logger.info("extraction source result: jobName={}, functionClassName={}, data={}", jobName, functionClassName, myJSONMapper.toJSONString(sourceResultMap));
+					logger.info("extraction source result: jobName={}, functionClassName={}, data={}", jobName, functionClassName, sourceResultMap.toString());
 				}
 			}
 
@@ -69,7 +65,7 @@ public class ExtractionExecutor {
 						continue;
 					}
 					Map<String, Object> sourceResultMap = extraction.sink(jobName, simpleUdfStreamOperatorFactory.getUserFunction());
-					logger.info("extraction sink result: jobName={}, functionClassName={}, data={}", jobName, functionClassName, myJSONMapper.toJSONString(sourceResultMap));
+					logger.info("extraction sink result: jobName={}, functionClassName={}, data={}", jobName, functionClassName, sourceResultMap.toString());
 				}
 			}
 		} catch (Exception ex) {
