@@ -1,7 +1,7 @@
-package org.apache.flink.streaming.libra.sink;
+package org.apache.flink.streaming.extraction.sink;
 
 import org.apache.flink.api.common.functions.Function;
-import org.apache.flink.streaming.libra.AbstractExtraction;
+import org.apache.flink.streaming.extraction.AbstractExtraction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

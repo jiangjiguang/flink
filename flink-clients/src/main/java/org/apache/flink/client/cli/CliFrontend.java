@@ -35,6 +35,7 @@ import org.apache.flink.client.program.PackagedProgramUtils;
 import org.apache.flink.client.program.ProgramInvocationException;
 import org.apache.flink.client.program.ProgramMissingJobException;
 import org.apache.flink.client.program.ProgramParametrizationException;
+import org.apache.flink.client.util.JavaEnvUtils;
 import org.apache.flink.configuration.ConfigConstants;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.configuration.CoreOptions;
@@ -236,6 +237,8 @@ public class CliFrontend {
 	 */
 	protected void info(String[] args) throws Exception {
 		LOG.info("Running 'info' command.");
+
+		LOG.info("The virtualMachineName is: " + JavaEnvUtils.getVirtualMachineName());
 
 		final Options commandOptions = CliFrontendParser.getInfoCommandOptions();
 
