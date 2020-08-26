@@ -27,51 +27,42 @@ public class ExtractionExecutor {
 			}
 			jobName = streamGraph.getJobName();
 			Collection<Integer> sourceIds = streamGraph.getSourceIDs();
-			if (CollectionUtils.isEmpty(sourceIds)) {
-				logger.warn("extractSourceOrSink warn: sourceIds is empty, jobName={}", jobName);
-			}
 			Collection<Integer> sinkIds = streamGraph.getSinkIDs();
-			if (CollectionUtils.isNotEmpty(sourceIds)) {
-				for (Integer sourceId : sourceIds) {
-					StreamNode streamNode = streamGraph.getStreamNode(sourceId);
-					SimpleUdfStreamOperatorFactory simpleUdfStreamOperatorFactory = (SimpleUdfStreamOperatorFactory) streamNode.getOperatorFactory();
-					if (simpleUdfStreamOperatorFactory == null) {
-						logger.warn("extraction source warn simpleUdfStreamOperatorFactory is null: jobName={}", jobName);
-						continue;
-					}
-					String functionClassName = simpleUdfStreamOperatorFactory.getUserFunctionClassName();
-					IExtraction extraction = getIExtraction(true, functionClassName, jobName);
-					if (extraction == null) {
-						logger.warn("extraction source warn extraction is null: jobName={}, className={}", jobName, functionClassName);
-						continue;
-					}
-					Map<String, Object> sourceResultMap = extraction.source(jobName, simpleUdfStreamOperatorFactory.getUserFunction());
-					logger.info("extraction source result: jobName={}, functionClassName={}, data={}", jobName, functionClassName, sourceResultMap.toString());
-				}
-			}
 
-			if (CollectionUtils.isNotEmpty(sinkIds)) {
-				for (Integer sinkId : sinkIds) {
-					StreamNode streamNode = streamGraph.getStreamNode(sinkId);
-					SimpleUdfStreamOperatorFactory simpleUdfStreamOperatorFactory = (SimpleUdfStreamOperatorFactory) streamNode.getOperatorFactory();
-					if (simpleUdfStreamOperatorFactory == null) {
-						logger.warn("extraction sink warn simpleUdfStreamOperatorFactory is null: jobName={}", jobName);
-						continue;
-					}
-					String functionClassName = simpleUdfStreamOperatorFactory.getUserFunctionClassName();
-					IExtraction extraction = getIExtraction(true, functionClassName, jobName);
-					if (extraction == null) {
-						logger.warn("extraction sink warn extraction is null: jobName={}, className={}", jobName, functionClassName);
-						continue;
-					}
-					Map<String, Object> sourceResultMap = extraction.sink(jobName, simpleUdfStreamOperatorFactory.getUserFunction());
-					logger.info("extraction sink result: jobName={}, functionClassName={}, data={}", jobName, functionClassName, sourceResultMap.toString());
-				}
-			}
+			extraction(sourceIds, streamGraph, jobName, true);
+			extraction(sinkIds, streamGraph, jobName, false);
 		} catch (Exception ex) {
 			logger.error("extractSourceOrSink error: jobName={}, exception={}", jobName, ExceptionUtils.getStackTrace(ex));
 		}
 	}
+
+	private void extraction(Collection<Integer> ids, StreamGraph streamGraph, String jobName, boolean source) {
+		try {
+			if (CollectionUtils.isEmpty(ids)) {
+				return;
+			}
+			for (Integer id : ids) {
+				StreamNode streamNode = streamGraph.getStreamNode(id);
+				SimpleUdfStreamOperatorFactory simpleUdfStreamOperatorFactory = (SimpleUdfStreamOperatorFactory) streamNode.getOperatorFactory();
+				if (simpleUdfStreamOperatorFactory == null) {
+					logger.warn("extraction warn simpleUdfStreamOperatorFactory is null: jobName={}, source={}, id={}", jobName, source, id);
+					continue;
+				}
+				String functionClassName = simpleUdfStreamOperatorFactory.getUserFunctionClassName();
+				IExtraction extraction = getIExtraction(true, functionClassName, jobName);
+				if (extraction == null) {
+					logger.warn("extraction warn IExtraction is null: jobName={}, source={}, id={}, className={}", jobName, source, id, functionClassName);
+					continue;
+				}
+				Map<String, Object> sourceResultMap = extraction.sink(jobName, simpleUdfStreamOperatorFactory.getUserFunction());
+				logger.info("extraction result: jobName={}, source={}, functionClassName={}, data={}", jobName, source, functionClassName, sourceResultMap.toString());
+			}
+		} catch (Exception ex) {
+			logger.error("extraction item: jobName={}, source={}, ids={}", jobName, source, ids.toString());
+			return;
+		}
+	}
+
 
 	private IExtraction getIExtraction(boolean source, String functionClassName, String jobName) {
 		if (functionClassName == null) {

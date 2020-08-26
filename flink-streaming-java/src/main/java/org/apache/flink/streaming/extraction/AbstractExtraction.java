@@ -28,30 +28,29 @@ public abstract class AbstractExtraction implements IExtraction {
 		Map<String, Object> resultMap = new HashMap<>();
 		try {
 			boolean allFlag = CollectionUtils.isEmpty(fieldSet) ? true : false;
-
-			Class klass = function.getClass();
-			Field[] fields = klass.getDeclaredFields();
-			for (Field field : fields) {
-				field.setAccessible(true);
-				Object value = field.get(function);
-				if (value != null && (allFlag || fieldSet.contains(field.getName()))) {
-					resultMap.put(field.getName(), value);
-				}
-			}
+			extractItem(resultMap, allFlag, function, fieldSet);
 			if (parent) {
-				Class parentClass = function.getClass().getSuperclass();
-				Field[] parentFields = parentClass.getDeclaredFields();
-				for (Field field : parentFields) {
-					field.setAccessible(true);
-					Object value = field.get(function);
-					if (value != null && (allFlag || fieldSet.contains(field.getName()))) {
-						resultMap.put(field.getName(), value);
-					}
-				}
+				extractItem(resultMap, allFlag, function, fieldSet);
 			}
 		} catch (Exception ex) {
 			logger.error("extractSourceOrSink error: jobName={}, exception={}", jobName, ExceptionUtils.getStackTrace(ex));
 		}
 		return resultMap;
+	}
+
+	private void extractItem(Map<String, Object> resultMap, boolean allFlag, Function function, Set<String> fieldSet) throws Exception {
+		Class parentClass = function.getClass().getSuperclass();
+		Field[] parentFields = parentClass.getDeclaredFields();
+		for (Field field : parentFields) {
+			field.setAccessible(true);
+			Object value = field.get(function);
+			if (value == null) {
+				continue;
+			}
+			if (allFlag || fieldSet.contains(field.getName())) {
+				resultMap.put(field.getName(), value);
+			}
+		}
+		return;
 	}
 }
