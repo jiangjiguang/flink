@@ -63,9 +63,14 @@ import org.apache.flink.streaming.api.graph.StreamGraph;
 import org.apache.flink.streaming.api.graph.StreamGraphGenerator;
 import org.apache.flink.streaming.api.operators.StreamSource;
 import org.apache.flink.streaming.extraction.ExtractionExecutor;
-import org.apache.flink.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.apache.flink.util.DynamicCodeLoadingException;
+import org.apache.flink.util.ExceptionUtils;
+import org.apache.flink.util.Preconditions;
+import org.apache.flink.util.SplittableIterator;
+import org.apache.flink.util.StringUtils;
+import org.apache.flink.util.WrappingRuntimeException;
 
 import java.io.IOException;
 import java.io.Serializable;
