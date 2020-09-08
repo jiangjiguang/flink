@@ -673,6 +673,7 @@ public class CliFrontend {
 	 */
 	PackagedProgram buildProgram(final ProgramOptions runOptions) throws FileNotFoundException, ProgramInvocationException {
 		String[] programArgs = runOptions.getProgramArgs();
+		LOG.info("buildProgram: programArgs={}", Arrays.toString(programArgs));
 		String jarFilePath = runOptions.getJarFilePath();
 		List<URL> classpaths = runOptions.getClasspaths();
 
@@ -948,7 +949,6 @@ public class CliFrontend {
 	 * Submits the job based on the arguments.
 	 */
 	public static void main(final String[] args) {
-		LOG.info("CliFrontend main start: args={}", Arrays.toString(args));
 		EnvironmentInformation.logEnvironmentInfo(LOG, "Command Line Client", args);
 
 		// 1. find the configuration directory
@@ -968,8 +968,12 @@ public class CliFrontend {
 				customCommandLines);
 
 			SecurityUtils.install(new SecurityConfiguration(cli.configuration));
+
+			LOG.info("runSecured start");
 			int retCode = SecurityUtils.getInstalledContext()
 					.runSecured(() -> cli.parseParameters(args));
+			LOG.info("runSecured end: retCode={}", retCode);
+
 			System.exit(retCode);
 		}
 		catch (Throwable t) {

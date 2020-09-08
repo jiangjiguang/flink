@@ -23,8 +23,11 @@ import org.apache.flink.client.ClientUtils;
 import org.apache.flink.configuration.ConfigConstants;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.runtime.jobgraph.SavepointRestoreSettings;
+import org.apache.flink.runtime.security.SecurityUtils;
 import org.apache.flink.util.InstantiationUtil;
 import org.apache.flink.util.JarUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 
@@ -46,10 +49,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -66,6 +66,7 @@ import static org.apache.flink.util.Preconditions.checkNotNull;
  * a program plan.
  */
 public class PackagedProgram {
+	private static final Logger LOG = LoggerFactory.getLogger(PackagedProgram.class);
 
 	/**
 	 * Property name of the entry in JAR manifest file that describes the Flink specific entry point.
@@ -296,6 +297,7 @@ public class PackagedProgram {
 	}
 
 	private static void callMainMethod(Class<?> entryClass, String[] args) throws ProgramInvocationException {
+		LOG.info("callMainMethod: entryClass={}, args={}", entryClass.getName(), Arrays.toString(args));
 		Method mainMethod;
 		if (!Modifier.isPublic(entryClass.getModifiers())) {
 			throw new ProgramInvocationException("The class " + entryClass.getName() + " must be public.");
