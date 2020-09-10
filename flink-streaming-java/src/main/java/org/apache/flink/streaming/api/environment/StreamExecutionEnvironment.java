@@ -1493,7 +1493,7 @@ public class StreamExecutionEnvironment {
 	 */
 	public JobExecutionResult execute(String jobName) throws Exception {
 		Preconditions.checkNotNull(jobName, "Streaming Job name should not be null.");
-
+		LOG.info("execute start: jobName={}", jobName);
 		return execute(getStreamGraph(jobName));
 	}
 
@@ -1594,12 +1594,14 @@ public class StreamExecutionEnvironment {
 	 */
 	@Internal
 	public JobClient executeAsync(StreamGraph streamGraph) throws Exception {
-		LOG.info("executeAsync ", streamGraph.getIterationSourceSinkPairs().toString());
+		LOG.info("executeAsync streamGraph: {}", streamGraph.getIterationSourceSinkPairs().toString());
 		checkNotNull(streamGraph, "StreamGraph cannot be null.");
 		checkNotNull(configuration.get(DeploymentOptions.TARGET), "No execution.target specified in your configuration file.");
 
 		final PipelineExecutorFactory executorFactory =
 			executorServiceLoader.getExecutorFactory(configuration);
+
+		LOG.info("executeAsync executorFactory={}, {}", executorFactory.getName(), executorFactory.getClass());
 
 		checkNotNull(
 			executorFactory,
