@@ -628,6 +628,7 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 		final FileSystem fs = FileSystem.get(yarnConfiguration);
 		final Path homeDir = fs.getHomeDirectory();
 
+		LOG.info("startAppMaster url={}", fs.getUri().getPath());
 		LOG.info("startAppMaster fs={}", fs.getClass().getSimpleName());
 		LOG.info("startAppMaster homeDir={}", homeDir.getName());
 
@@ -664,12 +665,15 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 
 		// ------------------ Add Zookeeper namespace to local flinkConfiguraton ------
 		String zkNamespace = getZookeeperNamespace();
+		LOG.info("zkNamespace param={}", zkNamespace);
 		// no user specified cli argument for namespace?
 		if (zkNamespace == null || zkNamespace.isEmpty()) {
 			// namespace defined in config? else use applicationId as default.
 			zkNamespace = configuration.getString(HighAvailabilityOptions.HA_CLUSTER_ID, String.valueOf(appId));
 			setZookeeperNamespace(zkNamespace);
 		}
+
+		LOG.info("zkNamespace result={}", zkNamespace);
 
 		configuration.setString(HighAvailabilityOptions.HA_CLUSTER_ID, zkNamespace);
 
@@ -695,9 +699,14 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 				// add user code jars from the provided JobGraph
 				: jobGraph.getUserJars().stream().map(f -> f.toUri()).map(File::new).collect(Collectors.toSet());
 
+		for (File file : userJarFiles){
+			LOG.info("userJarFile={}", file.getAbsolutePath());
+		}
+
 		// only for per job mode
 		if (jobGraph != null) {
 			for (Map.Entry<String, DistributedCache.DistributedCacheEntry> entry : jobGraph.getUserArtifacts().entrySet()) {
+				LOG.info("Distributed: key={}, path={}", entry.getKey(), entry.getValue().filePath);
 				org.apache.flink.core.fs.Path path = new org.apache.flink.core.fs.Path(entry.getValue().filePath);
 				// only upload local files
 				if (!path.getFileSystem().isDistributedFS()) {
