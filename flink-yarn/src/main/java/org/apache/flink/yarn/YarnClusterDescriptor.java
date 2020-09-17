@@ -647,6 +647,7 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 		Set<File> shipOnlyFiles = new HashSet<>();
 		for (File file : shipFiles) {
 			systemShipFiles.add(file.getAbsoluteFile());
+			LOG.info("shipFiles={}", file.getAbsolutePath());
 		}
 
 		final String logConfigFilePath = configuration.getString(YarnConfigOptionsInternal.APPLICATION_LOG_CONFIG_FILE);
@@ -738,6 +739,8 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 			Path.CUR_DIR,
 			envShipFileList);
 
+		LOG.info("systemClassPaths={}", systemClassPaths.toString());
+
 		// upload and register ship-only files
 		uploadAndRegisterFiles(
 			shipOnlyFiles,
@@ -760,9 +763,13 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 				ConfigConstants.DEFAULT_FLINK_USR_LIB_DIR : Path.CUR_DIR,
 			envShipFileList);
 
+		LOG.info("userClassPaths={}", userClassPaths.toString());
+
 		if (userJarInclusion == YarnConfigOptions.UserJarInclusion.ORDER) {
 			systemClassPaths.addAll(userClassPaths);
 		}
+
+		LOG.info("userJarInclusion={}", userJarInclusion.name());
 
 		// normalize classpath by sorting
 		Collections.sort(systemClassPaths);
