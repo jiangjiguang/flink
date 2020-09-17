@@ -149,6 +149,7 @@ public class StreamingJobGraphGenerator {
 		preValidate();
 
 		// make sure that all vertices start immediately
+		LOG.info("createJobGraph scheduleMode={}", streamGraph.getScheduleMode().name());
 		jobGraph.setScheduleMode(streamGraph.getScheduleMode());
 
 		// Generate deterministic hashes for the nodes in order to identify them across
@@ -212,6 +213,7 @@ public class StreamingJobGraphGenerator {
 				StreamOperatorFactory operatorFactory = node.getOperatorFactory();
 				if (operatorFactory != null) {
 					Class<?> operatorClass = operatorFactory.getStreamOperatorClass(classLoader);
+					LOG.info("preValidate operatorClass={}", operatorClass.getClass());
 					if (InputSelectable.class.isAssignableFrom(operatorClass)) {
 
 						throw new UnsupportedOperationException(

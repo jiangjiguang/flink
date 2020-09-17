@@ -271,7 +271,11 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 		// Check if we don't exceed YARN's maximum virtual cores.
 		final int numYarnMaxVcores = yarnClusterInformationRetriever.getMaxVcores();
 
+		LOG.info("numYarnMaxVcores={}", numYarnMaxVcores);
+
 		int configuredAmVcores = flinkConfiguration.getInteger(YarnConfigOptions.APP_MASTER_VCORES);
+		LOG.info("configuredAmVcores={}", configuredAmVcores);
+
 		if (configuredAmVcores > numYarnMaxVcores) {
 			throw new IllegalConfigurationException(
 					String.format("The number of requested virtual cores for application master %d" +
@@ -280,6 +284,8 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 		}
 
 		int configuredVcores = flinkConfiguration.getInteger(YarnConfigOptions.VCORES, clusterSpecification.getSlotsPerTaskManager());
+		LOG.info("configuredVcores={}, slotsPerTaskManager={}", configuredVcores, clusterSpecification.getSlotsPerTaskManager());
+
 		// don't configure more than the maximum configured number of vcores
 		if (configuredVcores > numYarnMaxVcores) {
 			throw new IllegalConfigurationException(
@@ -381,7 +387,7 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 		ClusterSpecification clusterSpecification,
 		JobGraph jobGraph,
 		boolean detached) throws ClusterDeploymentException {
-		LOG.info("deployJobCluster");
+		LOG.info("deployJobCluster: clusterSpecification={}, detached={}", clusterSpecification, detached);
 		try {
 			return deployInternal(
 				clusterSpecification,
@@ -422,17 +428,8 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 			@Nullable JobGraph jobGraph,
 			boolean detached) throws Exception {
 
-		/*
-		List<JobVertex> jobVertexList = jobGraph.getVerticesSortedTopologicallyFromSources();
-		for (JobVertex jobVertex : jobVertexList) {
-			List<JobEdge> jobEdges = jobVertex.getInputs();
-			for(JobEdge jobEdge : jobEdges){
-				jobEdge.get
-			}
-			System.out.println(jobVertex.getO());
-			jobVertex.
-		}
-		 */
+		LOG.info("deployInternal param: clusterSpecification={}, applicationName={}, yarnClusterEntrypoint={}, detached={}",
+			clusterSpecification, applicationName, yarnClusterEntrypoint, detached);
 
 		if (UserGroupInformation.isSecurityEnabled()) {
 			// note: UGI::hasKerberosCredentials inaccurately reports false
@@ -462,7 +459,7 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 
 		Resource maxRes = appResponse.getMaximumResourceCapability();
 
-		LOG.info("maxRes: {}", maxRes.toString());
+		LOG.info("maxRes: getVirtualCores={}, getMemory={}", maxRes.getVirtualCores(), maxRes.getMemory());
 
 		final ClusterResourceDescription freeClusterMem;
 		try {
@@ -962,6 +959,8 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 		// set classpath from YARN configuration
 		Utils.setupYarnClassPath(yarnConfiguration, appMasterEnv);
 
+		LOG.info("appMasterEnv={}", appMasterEnv.toString());
+
 		amContainer.setEnvironment(appMasterEnv);
 
 		// Set up resource type requirements for ApplicationMaster
@@ -1217,6 +1216,8 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 
 	private ClusterResourceDescription getCurrentFreeClusterResources(YarnClient yarnClient) throws YarnException, IOException {
 		List<NodeReport> nodes = yarnClient.getNodeReports(NodeState.RUNNING);
+
+		LOG.info("getCurrentFreeClusterResources nodes={}", nodes.size());
 
 		int totalFreeMemory = 0;
 		int containerLimit = 0;
@@ -1542,6 +1543,8 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 			int jobManagerMemoryMb) {
 		// ------------------ Prepare Application Master Container  ------------------------------
 
+		LOG.info("setupApplicationMasterContainer flinkConfiguration={}", flinkConfiguration.toString());
+
 		// respect custom JVM options in the YAML file
 		String javaOpts = flinkConfiguration.getString(CoreOptions.FLINK_JVM_OPTIONS);
 		if (flinkConfiguration.getString(CoreOptions.FLINK_JM_JVM_OPTIONS).length() > 0) {
@@ -1552,6 +1555,8 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 		if (hasKrb5) {
 			javaOpts += " -Djava.security.krb5.conf=krb5.conf";
 		}
+
+		LOG.info("setupApplicationMasterContainer javaOpts={}", javaOpts);
 
 		// Set up the container launch context for the application master
 		ContainerLaunchContext amContainer = Records.newRecord(ContainerLaunchContext.class);
@@ -1593,7 +1598,7 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 
 		amContainer.setCommands(Collections.singletonList(amCommand));
 
-		LOG.debug("Application Master start command: " + amCommand);
+		LOG.info("Application Master start command: " + amCommand);
 
 		return amContainer;
 	}

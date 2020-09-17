@@ -69,6 +69,7 @@ public class PluginConfig {
 			LOG.warn("The plugins directory [{}] does not exist.", pluginsDirFile);
 			return Optional.empty();
 		}
+		LOG.info("getPluginsDir path={}", pluginsDirFile.getAbsolutePath());
 		return Optional.of(pluginsDirFile);
 	}
 }

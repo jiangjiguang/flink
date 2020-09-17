@@ -22,6 +22,8 @@ package org.apache.flink.client;
 import org.apache.flink.api.dag.Pipeline;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.runtime.jobgraph.JobGraph;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Utility for transforming {@link Pipeline FlinkPipelines} into a {@link JobGraph}. This uses
@@ -29,7 +31,7 @@ import org.apache.flink.runtime.jobgraph.JobGraph;
  * subclass of {@link Pipeline}.
  */
 public final class FlinkPipelineTranslationUtil {
-
+	private static final Logger LOG = LoggerFactory.getLogger(FlinkPipelineTranslationUtil.class);
 	/**
 	 * Transmogrifies the given {@link Pipeline} to a {@link JobGraph}.
 	 */
@@ -39,6 +41,10 @@ public final class FlinkPipelineTranslationUtil {
 			int defaultParallelism) {
 
 		FlinkPipelineTranslator pipelineTranslator = getPipelineTranslator(pipeline);
+
+		LOG.info("getJobGraph pipelineTranslator={}", pipelineTranslator.getClass());
+
+		LOG.info("getJobGraph json={}", pipelineTranslator.translateToJSONExecutionPlan(pipeline));
 
 		return pipelineTranslator.translateToJobGraph(pipeline,
 				optimizerConfiguration,
