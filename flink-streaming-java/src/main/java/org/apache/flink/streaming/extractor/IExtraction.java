@@ -1,4 +1,4 @@
-package org.apache.flink.streaming.extraction;
+package org.apache.flink.streaming.extractor;
 
 import org.apache.flink.api.common.functions.Function;
 

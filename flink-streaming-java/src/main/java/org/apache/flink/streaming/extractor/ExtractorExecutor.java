@@ -1,21 +1,21 @@
-package org.apache.flink.streaming.extraction;
+package org.apache.flink.streaming.extractor;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.flink.streaming.api.graph.StreamGraph;
 import org.apache.flink.streaming.api.graph.StreamNode;
 import org.apache.flink.streaming.api.operators.SimpleUdfStreamOperatorFactory;
-import org.apache.flink.streaming.extraction.sink.*;
-import org.apache.flink.streaming.extraction.source.DefaultSourceExtraction;
-import org.apache.flink.streaming.extraction.source.FlinkKafkaConsumerExtraction;
+import org.apache.flink.streaming.extractor.sink.*;
+import org.apache.flink.streaming.extractor.source.DefaultSourceExtractor;
+import org.apache.flink.streaming.extractor.source.FlinkKafkaConsumerExtractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.Map;
 
-public class ExtractionExecutor {
-	private static final Logger logger = LoggerFactory.getLogger(ExtractionExecutor.class);
+public class ExtractorExecutor {
+	private static final Logger logger = LoggerFactory.getLogger(ExtractorExecutor.class);
 
 	public void extractSourceOrSink(StreamGraph streamGraph) {
 		String jobName = "";
@@ -71,21 +71,21 @@ public class ExtractionExecutor {
 		}
 		switch (functionClassName) {
 			case "org.apache.flink.streaming.api.functions.sink.filesystem.StreamingFileSink":
-				return new StreamingFileSinkExtraction();
+				return new StreamingFileSinkExtractor();
 			case "org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer":
-				return new FlinkKafkaConsumerExtraction();
+				return new FlinkKafkaConsumerExtractor();
 			case "org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer":
-				return new FlinkKafkaProducerExtraction();
+				return new FlinkKafkaProducerExtractor();
 			case "org.apache.flink.streaming.connectors.elasticsearch5.ElasticsearchSink":
-				return new FlinkElasticsearch5SinkExtraction();
+				return new FlinkElasticsearch5SinkExtractor();
 			case "org.apache.flink.streaming.connectors.elasticsearch6.ElasticsearchSink":
 			case "org.apache.flink.streaming.connectors.elasticsearch7.ElasticsearchSink":
-				return new FlinkElasticsearchSinkExtraction();
+				return new FlinkElasticsearchSinkExtractor();
 			default:
 				if (source) {
-					return new DefaultSourceExtraction();
+					return new DefaultSourceExtractor();
 				}
-				return new DefaultSinkExtraction();
+				return new DefaultSinkExtractor();
 		}
 	}
 }

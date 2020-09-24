@@ -228,6 +228,8 @@ public class StreamingJobGraphGenerator {
 	private void setPhysicalEdges() {
 		Map<Integer, List<StreamEdge>> physicalInEdgesInOrder = new HashMap<Integer, List<StreamEdge>>();
 
+		LOG.info("setPhysicalEdges={}", physicalEdgesInOrder);
+
 		for (StreamEdge edge : physicalEdgesInOrder) {
 			int target = edge.getTargetId();
 
@@ -242,6 +244,8 @@ public class StreamingJobGraphGenerator {
 
 			vertexConfigs.get(vertex).setInPhysicalEdges(edgeList);
 		}
+
+		LOG.info("vertexConfigs={}", vertexConfigs);
 	}
 
 	/**
@@ -263,6 +267,8 @@ public class StreamingJobGraphGenerator {
 			int chainIndex,
 			Map<Integer, List<Tuple2<byte[], byte[]>>> chainedOperatorHashes) {
 
+		LOG.info("createChain start, startNodeId={}, currentNodeId={}", startNodeId, currentNodeId);
+
 		if (!builtVertices.contains(startNodeId)) {
 
 			List<StreamEdge> transitiveOutEdges = new ArrayList<StreamEdge>();
@@ -272,6 +278,8 @@ public class StreamingJobGraphGenerator {
 
 			StreamNode currentNode = streamGraph.getStreamNode(currentNodeId);
 
+			LOG.info("createChain, startNodeId={}, currentNodeId={}, outEdge size={}", startNodeId, currentNodeId, currentNode.getOutEdges().size());
+
 			for (StreamEdge outEdge : currentNode.getOutEdges()) {
 				if (isChainable(outEdge, streamGraph)) {
 					chainableOutputs.add(outEdge);
@@ -280,6 +288,11 @@ public class StreamingJobGraphGenerator {
 				}
 			}
 
+			LOG.info("createChain, startNodeId={}, currentNodeId={}, chainableOutputs={}, nonChainableOutputs={}",
+				startNodeId, currentNodeId, chainableOutputs.size(), nonChainableOutputs.size());
+
+
+			//从source开始，获取可以链接在一起的StreamEdge，这里可以当做是递归，获取到该source的chain
 			for (StreamEdge chainable : chainableOutputs) {
 				transitiveOutEdges.addAll(
 						createChain(startNodeId, chainable.getTargetId(), hashes, legacyHashes, chainIndex + 1, chainedOperatorHashes));
@@ -301,16 +314,25 @@ public class StreamingJobGraphGenerator {
 			}
 
 			chainedNames.put(currentNodeId, createChainedName(currentNodeId, chainableOutputs));
+
+			LOG.info("chainedNames={}", chainedNames.toString());
+
 			chainedMinResources.put(currentNodeId, createChainedMinResources(currentNodeId, chainableOutputs));
+			LOG.info("chainedMinResources={}", chainedMinResources.toString());
+
 			chainedPreferredResources.put(currentNodeId, createChainedPreferredResources(currentNodeId, chainableOutputs));
+			LOG.info("chainedPreferredResources={}", chainedPreferredResources.toString());
 
 			if (currentNode.getInputFormat() != null) {
+				LOG.info("createChain, startNodeId={}, currentNodeId={}, getInputFormat={}", startNodeId, currentNodeId, currentNode.getInputFormat().getClass().getName());
 				getOrCreateFormatContainer(startNodeId).addInputFormat(currentOperatorId, currentNode.getInputFormat());
 			}
 
 			if (currentNode.getOutputFormat() != null) {
+				LOG.info("createChain, startNodeId={}, currentNodeId={}, getOutputFormat={}", startNodeId, currentNodeId, currentNode.getOutputFormat().getClass().getName());
 				getOrCreateFormatContainer(startNodeId).addOutputFormat(currentOperatorId, currentNode.getOutputFormat());
 			}
+
 
 			StreamConfig config = currentNodeId.equals(startNodeId)
 					? createJobVertex(startNodeId, hashes, legacyHashes, chainedOperatorHashes)
@@ -346,6 +368,9 @@ public class StreamingJobGraphGenerator {
 			if (chainableOutputs.isEmpty()) {
 				config.setChainEnd();
 			}
+
+			LOG.info("createChain end, startNodeId={}, currentNodeId={}", startNodeId, currentNodeId);
+
 			return transitiveOutEdges;
 
 		} else {
@@ -359,6 +384,7 @@ public class StreamingJobGraphGenerator {
 	}
 
 	private String createChainedName(Integer vertexID, List<StreamEdge> chainedOutputs) {
+		LOG.info("createChainedName vertexID={}, chainedOutputs={}", vertexID, chainedOutputs.size());
 		String operatorName = streamGraph.getStreamNode(vertexID).getOperatorName();
 		if (chainedOutputs.size() > 1) {
 			List<String> outputChainedNames = new ArrayList<>();
@@ -446,6 +472,8 @@ public class StreamingJobGraphGenerator {
 		}
 
 		jobVertex.setResources(chainedMinResources.get(streamNodeId), chainedPreferredResources.get(streamNodeId));
+
+		LOG.info("jobVertexClass={}", streamNode.getJobVertexClass());
 
 		jobVertex.setInvokableClass(streamNode.getJobVertexClass());
 

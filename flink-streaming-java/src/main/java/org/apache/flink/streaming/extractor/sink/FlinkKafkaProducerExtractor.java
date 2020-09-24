@@ -1,7 +1,7 @@
-package org.apache.flink.streaming.extraction.sink;
+package org.apache.flink.streaming.extractor.sink;
 
 import org.apache.flink.api.common.functions.Function;
-import org.apache.flink.streaming.extraction.AbstractExtraction;
+import org.apache.flink.streaming.extractor.AbstractExtractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,8 +11,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class FlinkKafkaProducerExtraction extends AbstractExtraction {
-	private static final Logger logger = LoggerFactory.getLogger(FlinkKafkaProducerExtraction.class);
+public class FlinkKafkaProducerExtractor extends AbstractExtractor {
+	private static final Logger logger = LoggerFactory.getLogger(FlinkKafkaProducerExtractor.class);
 
 	private static final Set<String> fields = Stream.of("semantic",
 		"defaultTopicId", "producerConfig")

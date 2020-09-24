@@ -1,4 +1,4 @@
-package org.apache.flink.streaming.extraction;
+package org.apache.flink.streaming.extractor;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -11,8 +11,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class AbstractExtraction implements IExtraction {
-	private static final Logger logger = LoggerFactory.getLogger(AbstractExtraction.class);
+public abstract class AbstractExtractor implements IExtraction {
+	private static final Logger logger = LoggerFactory.getLogger(AbstractExtractor.class);
 
 	@Override
 	public Map<String, Object> source(String jobName, Function function) {

@@ -1,8 +1,8 @@
-package org.apache.flink.streaming.extraction.sink;
+package org.apache.flink.streaming.extractor.sink;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.flink.api.common.functions.Function;
-import org.apache.flink.streaming.extraction.AbstractExtraction;
+import org.apache.flink.streaming.extractor.AbstractExtractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,8 +14,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class FlinkElasticsearch5SinkExtraction extends AbstractExtraction {
-	private static final Logger logger = LoggerFactory.getLogger(FlinkElasticsearch5SinkExtraction.class);
+public class FlinkElasticsearch5SinkExtractor extends AbstractExtractor {
+	private static final Logger logger = LoggerFactory.getLogger(FlinkElasticsearch5SinkExtractor.class);
 
 	private static final Set<String> fieldSet = Stream.of("callBridge")
 		.collect(Collectors.toCollection(HashSet::new));

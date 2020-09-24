@@ -1,11 +1,11 @@
-package org.apache.flink.streaming.extraction.source;
+package org.apache.flink.streaming.extractor.source;
 
 import org.apache.flink.api.common.functions.Function;
-import org.apache.flink.streaming.extraction.AbstractExtraction;
+import org.apache.flink.streaming.extractor.AbstractExtractor;
 
 import java.util.Map;
 
-public class DefaultSourceExtraction extends AbstractExtraction {
+public class DefaultSourceExtractor extends AbstractExtractor {
 	@Override
 	public Map<String, Object> source(String jobName, Function function) {
 		return super.source(jobName, function);

@@ -799,6 +799,8 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 		paths.add(remotePathJar);
 		classPathBuilder.append(flinkJarPath.getName()).append(File.pathSeparator);
 
+		LOG.info("classPathBuilder={}", classPathBuilder.toString());
+
 		// Upload the flink configuration
 		// write out configuration file
 		File tmpConfigurationFile = null;
@@ -829,6 +831,7 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 				classPathBuilder.append(userClassPath).append(File.pathSeparator);
 			}
 		}
+		LOG.info("classPathBuilder 2={}", classPathBuilder.toString());
 
 		// write job graph to tmp file and add it to local resource
 		// TODO: server use user main method to generate job graph
@@ -852,6 +855,7 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 						localResources,
 						homeDir,
 						"");
+				LOG.info("JobGraphFile={}", pathFromYarnURL);
 				paths.add(pathFromYarnURL);
 				classPathBuilder.append(jobGraphFilename).append(File.pathSeparator);
 			} catch (Exception e) {
@@ -936,6 +940,10 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 			Utils.setTokensFor(amContainer, paths, yarnConfiguration);
 		}
 
+		for (Map.Entry<String, LocalResource> entry : localResources.entrySet()) {
+			LOG.info("LocalResource, key={}, value={}", entry.getKey(), entry.getValue().getPattern());
+		}
+
 		amContainer.setLocalResources(localResources);
 		fs.close();
 
@@ -1011,6 +1019,8 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 		Runtime.getRuntime().addShutdownHook(deploymentFailureHook);
 		LOG.info("Submitting application master " + appId);
 		yarnClient.submitApplication(appContext);
+
+
 
 		LOG.info("Waiting for the cluster to be allocated");
 		final long startTime = System.currentTimeMillis();
@@ -1323,7 +1333,7 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId> {
 
 	private void setApplicationNodeLabel(final ApplicationSubmissionContext appContext) throws InvocationTargetException,
 			IllegalAccessException {
-
+		LOG.info("nodeLabel={}", nodeLabel);
 		if (nodeLabel != null) {
 			final ApplicationSubmissionContextReflector reflector = ApplicationSubmissionContextReflector.getInstance();
 			reflector.setApplicationNodeLabel(appContext, nodeLabel);

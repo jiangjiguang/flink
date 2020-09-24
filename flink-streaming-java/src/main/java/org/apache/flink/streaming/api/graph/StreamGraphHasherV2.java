@@ -106,6 +106,7 @@ public class StreamGraphHasherV2 implements StreamGraphHasher {
 
 		StreamNode currentNode;
 		while ((currentNode = remaining.poll()) != null) {
+			LOG.info("currentNode={}", currentNode.getId());
 			// Generate the hash code. Because multiple path exist to each
 			// node, we might not have all required inputs available to
 			// generate the hash code.
@@ -123,6 +124,10 @@ public class StreamGraphHasherV2 implements StreamGraphHasher {
 				// We will revisit this later.
 				visited.remove(currentNode.getId());
 			}
+		}
+
+		for (Map.Entry<Integer, byte[]> entry : hashes.entrySet()) {
+			LOG.info("hashes key={}, value={}", entry.getKey(), Arrays.hashCode(entry.getValue()));
 		}
 
 		return hashes;
@@ -219,11 +224,14 @@ public class StreamGraphHasherV2 implements StreamGraphHasher {
 		// hashes as the ID. We cannot use the node's ID, because it is
 		// assigned from a static counter. This will result in two identical
 		// programs having different hashes.
+
+		LOG.info("generateDeterministicHash id={}, size={}", node.getId(), hashes.size());
 		generateNodeLocalHash(hasher, hashes.size());
 
 		// Include chained nodes to hash
 		for (StreamEdge outEdge : node.getOutEdges()) {
 			if (isChainable(outEdge, isChainingEnabled, streamGraph)) {
+				LOG.info("generateDeterministicHash item id={}, size={}", node.getId(), hashes.size());
 
 				// Use the hash size again, because the nodes are chained to
 				// this node. This does not add a hash for the chained nodes.
@@ -277,6 +285,7 @@ public class StreamGraphHasherV2 implements StreamGraphHasher {
 		// This resolves conflicts for otherwise identical source nodes. BUT
 		// the generated hash codes depend on the ordering of the nodes in the
 		// stream graph.
+		LOG.info("generateNodeLocalHash id={}", id);
 		hasher.putInt(id);
 	}
 

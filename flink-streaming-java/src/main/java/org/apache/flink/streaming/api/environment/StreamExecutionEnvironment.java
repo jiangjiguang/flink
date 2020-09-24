@@ -62,7 +62,7 @@ import org.apache.flink.streaming.api.functions.source.*;
 import org.apache.flink.streaming.api.graph.StreamGraph;
 import org.apache.flink.streaming.api.graph.StreamGraphGenerator;
 import org.apache.flink.streaming.api.operators.StreamSource;
-import org.apache.flink.streaming.extraction.ExtractionExecutor;
+import org.apache.flink.streaming.extractor.ExtractorExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.flink.util.DynamicCodeLoadingException;
@@ -1665,8 +1665,8 @@ public class StreamExecutionEnvironment {
 			this.transformations.clear();
 		}
 
-		ExtractionExecutor extractionExecutor = new ExtractionExecutor();
-		extractionExecutor.extractSourceOrSink(streamGraph);
+		ExtractorExecutor extractorExecutor = new ExtractorExecutor();
+		extractorExecutor.extractSourceOrSink(streamGraph);
 
 		return streamGraph;
 	}
