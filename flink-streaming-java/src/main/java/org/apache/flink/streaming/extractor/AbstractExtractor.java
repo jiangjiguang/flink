@@ -3,6 +3,7 @@ package org.apache.flink.streaming.extractor;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.flink.api.common.functions.Function;
+import org.apache.flink.streaming.api.graph.StreamNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +23,27 @@ public abstract class AbstractExtractor implements IExtraction {
 	@Override
 	public Map<String, Object> sink(String jobName, Function function) {
 		return extractSourceOrSink(jobName, function, null, true);
+	}
+
+	@Override
+	public Map<String, Object> type(String jobName, StreamNode streamNode) {
+		Map<String, Object> resultMap = new HashMap<>();
+		try {
+			Class clazz = streamNode.getClass();
+			Field[] fields = clazz.getDeclaredFields();
+			for (Field field : fields) {
+				field.setAccessible(true);
+				Object value = field.get(streamNode);
+				logger.info("extractType field={}, value={}", field.getName(), value);
+
+				if (value == null) {
+					continue;
+				}
+			}
+		} catch (Exception ex) {
+			logger.error("extractType error: {}, {}", jobName, ExceptionUtils.getStackTrace(ex));
+		}
+		return resultMap;
 	}
 
 	protected Map<String, Object> extractSourceOrSink(String jobName, Function function, Set<String> fieldSet, boolean parent) {

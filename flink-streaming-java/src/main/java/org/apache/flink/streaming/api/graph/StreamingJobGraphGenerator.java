@@ -625,8 +625,33 @@ public class StreamingJobGraphGenerator {
 		StreamNode upStreamVertex = streamGraph.getSourceVertex(edge);
 		StreamNode downStreamVertex = streamGraph.getTargetVertex(edge);
 
+		String upOperatorName = upStreamVertex.getOperatorName();
+		String downOperatorName = downStreamVertex.getOperatorName();
+
 		StreamOperatorFactory<?> headOperator = upStreamVertex.getOperatorFactory();
 		StreamOperatorFactory<?> outOperator = downStreamVertex.getOperatorFactory();
+
+		LOG.info("isChainable, upOperatorName={}, downOperatorName={}, size={}",
+			upOperatorName, downOperatorName, downStreamVertex.getInEdges().size());
+		LOG.info("isChainable, upOperatorName={}, downOperatorName={}, outOperator={}",
+			upOperatorName, downOperatorName, outOperator);
+		LOG.info("isChainable, upOperatorName={}, downOperatorName={}, headOperator={}",
+			upOperatorName, downOperatorName, headOperator);
+		LOG.info("isChainable, upOperatorName={}, downOperatorName={}, isSameSlotSharingGroup={}",
+			upOperatorName, downOperatorName, upStreamVertex.isSameSlotSharingGroup(downStreamVertex));
+		LOG.info("isChainable, upOperatorName={}, downOperatorName={}, outOperator.getChainingStrategy={}",
+			upOperatorName, downOperatorName, outOperator.getChainingStrategy());
+		LOG.info("isChainable, upOperatorName={}, downOperatorName={}, headOperator.getChainingStrategy={}",
+			upOperatorName, downOperatorName, headOperator.getChainingStrategy());
+		LOG.info("isChainable, upOperatorName={}, downOperatorName={}, edge.getPartitioner={}",
+			upOperatorName, downOperatorName, edge.getPartitioner().toString());
+		LOG.info("isChainable, upOperatorName={}, downOperatorName={}, edge.getShuffleMode={}",
+			upOperatorName, downOperatorName, edge.getShuffleMode());
+		LOG.info("isChainable, upOperatorName={}, downOperatorName={}, getParallelism={}",
+			upOperatorName, downOperatorName, upStreamVertex.getParallelism() == downStreamVertex.getParallelism());
+		LOG.info("isChainable, upOperatorName={}, downOperatorName={}, isChainingEnabled={}",
+			upOperatorName, downOperatorName, streamGraph.isChainingEnabled());
+
 
 		return downStreamVertex.getInEdges().size() == 1
 				&& outOperator != null

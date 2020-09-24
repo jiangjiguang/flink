@@ -8,6 +8,7 @@ import org.apache.flink.streaming.api.operators.SimpleUdfStreamOperatorFactory;
 import org.apache.flink.streaming.extractor.sink.*;
 import org.apache.flink.streaming.extractor.source.DefaultSourceExtractor;
 import org.apache.flink.streaming.extractor.source.FlinkKafkaConsumerExtractor;
+import org.apache.flink.streaming.extractor.type.DefaultTypeExtractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +26,12 @@ public class ExtractorExecutor {
 				return;
 			}
 			jobName = streamGraph.getJobName();
+
+			for (StreamNode streamNode : streamGraph.getStreamNodes()) {
+				IExtraction extraction = getIExtraction(jobName, streamNode);
+				extraction.type(jobName, streamNode);
+			}
+
 			Collection<Integer> sourceIds = streamGraph.getSourceIDs();
 			Collection<Integer> sinkIds = streamGraph.getSinkIDs();
 
@@ -63,6 +70,9 @@ public class ExtractorExecutor {
 		}
 	}
 
+	private IExtraction getIExtraction(String jobName, StreamNode streamNode) {
+		return new DefaultTypeExtractor();
+	}
 
 	private IExtraction getIExtraction(boolean source, String functionClassName, String jobName) {
 		if (functionClassName == null) {
