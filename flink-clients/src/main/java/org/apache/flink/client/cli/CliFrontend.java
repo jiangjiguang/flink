@@ -61,6 +61,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetSocketAddress;
@@ -949,6 +951,8 @@ public class CliFrontend {
 	 * Submits the job based on the arguments.
 	 */
 	public static void main(final String[] args) {
+		printPid();
+
 		EnvironmentInformation.logEnvironmentInfo(LOG, "Command Line Client", args);
 
 		// 1. find the configuration directory
@@ -982,6 +986,18 @@ public class CliFrontend {
 			strippedThrowable.printStackTrace();
 			System.exit(31);
 		}
+	}
+
+	private static void printPid(){
+		try {
+			RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
+			System.out.println(runtimeMXBean.getName());
+			int pid = Integer.valueOf(runtimeMXBean.getName().split("@")[0]).intValue();
+			LOG.info("CliFrontend process id : {}",pid);
+		} catch (NumberFormatException e) {
+			LOG.error("printPid is error,the exception :{}", org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace(e));
+		}
+
 	}
 
 	// --------------------------------------------------------------------------------------------
