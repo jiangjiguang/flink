@@ -63,7 +63,8 @@ public class PrometheusPushGatewayReporter extends AbstractPrometheusReporter im
 		String configuredJobName = config.getString(JOB_NAME.key(), JOB_NAME.defaultValue());
 		boolean randomSuffix = config.getBoolean(RANDOM_JOB_NAME_SUFFIX.key(), RANDOM_JOB_NAME_SUFFIX.defaultValue());
 		deleteOnShutdown = config.getBoolean(DELETE_ON_SHUTDOWN.key(), DELETE_ON_SHUTDOWN.defaultValue());
-		groupingKey = parseGroupingKey(config.getString(GROUPING_KEY.key(), GROUPING_KEY.defaultValue()));
+		//groupingKey = parseGroupingKey(config.getString(GROUPING_KEY.key(), GROUPING_KEY.defaultValue()));
+		groupingKey = parseLabels(config.getString(GROUPING_KEY.key(), GROUPING_KEY.defaultValue()));
 
 		if (host == null || host.isEmpty() || port < 1) {
 			throw new IllegalArgumentException("Invalid host/port configuration. Host: " + host + " Port: " + port);

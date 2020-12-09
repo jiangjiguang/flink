@@ -35,6 +35,9 @@ import org.apache.flink.runtime.metrics.groups.FrontMetricGroup;
 
 import io.prometheus.client.Collector;
 import io.prometheus.client.CollectorRegistry;
+
+import org.apache.flink.util.StringUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,6 +108,7 @@ public abstract class AbstractPrometheusReporter implements MetricReporter {
 			dimensionKeys.add(CHARACTER_FILTER.filterCharacters(key.substring(1, key.length() - 1)));
 			dimensionValues.add(labelValueCharactersFilter.filterCharacters(dimension.getValue()));
 		}
+		resolveDimensions(dimensionKeys, dimensionValues);
 
 		final String scopedMetricName = getScopedName(metricName, group);
 		final String helpString = metricName + " (scope: " + getLogicalScope(group) + ")";
@@ -128,6 +132,33 @@ public abstract class AbstractPrometheusReporter implements MetricReporter {
 			addMetric(metric, dimensionValues, collector);
 			collectorsWithCountByMetricName.put(scopedMetricName, new AbstractMap.SimpleImmutableEntry<>(collector, count + 1));
 		}
+	}
+
+	protected void resolveDimensions(List<String> dimensionKeys, List<String> dimensionValues) {}
+
+	protected Map<String, String> parseLabels(final String labelConfig) {
+		if (!labelConfig.isEmpty()) {
+			Map<String, String> labels = new HashMap<>();
+			String[] kvs = labelConfig.split(";");
+			for (String kv : kvs) {
+				int idx = kv.indexOf("=");
+				if (idx < 0) {
+					log.warn("Invalid label: {}, will be ignored", kv);
+					continue;
+				}
+
+				String labelKey = kv.substring(0, idx);
+				String labelValue = kv.substring(idx + 1);
+				if (StringUtils.isNullOrWhitespaceOnly(labelKey) || StringUtils.isNullOrWhitespaceOnly(labelValue)) {
+					log.warn("Invalid label labelKey:{}, labelValue:{} must not be empty", labelKey, labelValue);
+					continue;
+				}
+				labels.put(labelKey, labelValue);
+			}
+
+			return labels;
+		}
+		return Collections.emptyMap();
 	}
 
 	private static String getScopedName(String metricName, MetricGroup group) {
